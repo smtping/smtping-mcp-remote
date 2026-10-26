@@ -1,0 +1,14 @@
+{
+  "name": "smtping-mcp-remote",
+  "version": "1.0.0",
+  "private": true,
+  "description": "SMTPing remote MCP server (Streamable HTTP + OAuth) at https://mcp.smtping.com/mcp",
+  "type": "module",
+  "license": "MIT",
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@smtping/sdk": "^1.1.1"
+  }
+}

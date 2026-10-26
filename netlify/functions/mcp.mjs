@@ -60,10 +60,12 @@ const prm = (base) => ({
   authorization_servers: [base],
   bearer_methods_supported: ['header'],
   resource_name: 'SMTPing Email Verification',
+  logo_uri: base + '/icon-512.png',
   resource_documentation: 'https://smtping.com/docs',
 });
 const asm = (base) => ({
   issuer: base,
+  logo_uri: base + '/icon-512.png',
   authorization_endpoint: base + '/authorize',
   token_endpoint: base + '/token',
   registration_endpoint: base + '/register',
@@ -232,7 +234,7 @@ async function run(name, a, k) {
   throw Object.assign(new Error(`Unknown tool: ${name}`), { rpc: -32602 });
 }
 
-async function handle(m, k) {
+async function handle(m, k, base) {
   const ok = (result) => ({ jsonrpc: '2.0', id: m.id, result });
   const err = (code, message) => ({ jsonrpc: '2.0', id: m.id ?? null, error: { code, message } });
   if (!m || m.jsonrpc !== '2.0' || typeof m.method !== 'string') return m && m.id === undefined ? null : err(-32600, 'Invalid request');
@@ -243,7 +245,7 @@ async function handle(m, k) {
       return ok({
         protocolVersion: PROTOCOLS.includes(v) ? v : PROTOCOLS[0],
         capabilities: { tools: { listChanged: false } },
-        serverInfo: { name: 'smtping', title: 'SMTPing Email Verification', version: VERSION },
+        serverInfo: { name: 'smtping', title: 'SMTPing Email Verification', version: VERSION, websiteUrl: 'https://smtping.com', icons: [{ src: base + '/icon-512.png', mimeType: 'image/png', sizes: ['512x512'] }, { src: base + '/icon-192.png', mimeType: 'image/png', sizes: ['192x192'] }] },
         instructions: 'SMTPing verifies email addresses before you send. Use verify_email for one address and verify_list for several. Results come in three bands: safe (send), avoid (remove) and judgement (your call). Unknown results are never charged.',
       });
     }
@@ -277,7 +279,7 @@ async function mcp(req, base) {
   let body;
   try { body = await req.json(); } catch { return json({ jsonrpc: '2.0', id: null, error: { code: -32700, message: 'Parse error' } }, 400); }
   const batch = Array.isArray(body);
-  const out = (await Promise.all((batch ? body : [body]).map((m) => handle(m, k)))).filter(Boolean);
+  const out = (await Promise.all((batch ? body : [body]).map((m) => handle(m, k, base)))).filter(Boolean);
   if (!out.length) return new Response(null, { status: 202, headers: CORS });
   return json(batch ? out : out[0]);
 }

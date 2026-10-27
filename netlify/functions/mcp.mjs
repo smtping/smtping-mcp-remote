@@ -172,12 +172,12 @@ async function token(req) {
 }
 
 // ── MCP tools ──
-const ro = { readOnlyHint: true, openWorldHint: true };
+const ro = { readOnlyHint: true, destructiveHint: false, openWorldHint: true };
 const TOOLS = [
   { name: 'verify_email', title: 'Verify an email address', annotations: ro,
     description: 'Verifies one email address with SMTPing. Returns a status (valid, invalid, catch_all, spamtrap, disposable, etc.) and a band: safe (send), avoid (remove) or judgement (your call). Costs 1 credit.',
     inputSchema: { type: 'object', properties: { email: { type: 'string', description: 'The email address to verify' } }, required: ['email'] } },
-  { name: 'verify_list', title: 'Verify a list of email addresses', annotations: { readOnlyHint: false, openWorldHint: true },
+  { name: 'verify_list', title: 'Verify a list of email addresses', annotations: { readOnlyHint: false, destructiveHint: false, openWorldHint: true },
     description: 'Verifies a list of addresses as one SMTPing bulk job (deduplicated, up to 100,000). Lists of 10 or fewer return results directly. Larger lists return a job_id: call get_bulk_job with it until the job has succeeded. Costs 1 credit per unique address.',
     inputSchema: { type: 'object', properties: { emails: { type: 'array', items: { type: 'string' }, minItems: 1, description: 'Email addresses to verify' } }, required: ['emails'] } },
   { name: 'get_bulk_job', title: 'Get a bulk job', annotations: ro,
